@@ -19,24 +19,16 @@ rankall <- function(outcome, num="best"){
     # Sort and return all hospitals in the state, ranked by the outcome
     result <- final_data[order(final_data['Outcome'], final_data['Hospital.Name']), ]
     
-    splited = split(result, result$State)
-    ans = sapply(splited, function(x, num) {
-        # Order by Deaths and then HospitalName
-        x = x[order(x$Outcome, x$Hospital.Name),]
+    # Split the data according to states
+    sep <- split(result, result$State)
+    
+    # Return nth-ranking hospital for each state 
+    out <- sapply(sep, function(x, num) {
+        # Assign a value for "best" and "worst", and check if num is valid
+        if(num == "best") num <- 1
+        else if(num == "worst") num <- nrow(x)
+        else if(num > nrow(x)) stop("num > no. of rows")
         
-        # Return
-        if(class(num) == "character") {
-            if(num == "best") {
-                return (x$Hospital.Name[1])
-            }
-            else if(num == "worst") {
-                return (x$Hospital.Name[nrow(x)])
-            }
-        }
-        else {
-            return (x$Hospital.Name[num])
-        }
+        return(x$Hospital.Name[num])
     }, num)
-    
-    
 }
